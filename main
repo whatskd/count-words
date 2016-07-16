@@ -1,0 +1,62 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+bool isletter(char c)		//判断是否为字母
+{
+    if((c>=65&&c<=90)||(c>=97&&c<=122)) return 1;
+    else return 0;
+}
+
+struct word		//单词类
+{
+    string s;
+    unsigned time=0;
+};
+
+int main()
+{
+    ifstream fin("test.txt");
+    ofstream fout("result.txt");
+    string st;
+    word w[10000];		//字典
+    int diclen=0;		//字典的大小
+    while(fin>>st)		//读入字符串
+    {
+        if(!isletter(st[st.size()-1])) st.erase(st.size()-1,1);		//处理删除字符串头尾的标点符号
+        if(!isletter(st[0])) st.erase(0,1);
+        int flag=0;		//是否已有单词标记
+        for(int i=0;i<=diclen;i++)		//搜索字典内是否有该单词
+        {
+            if(st.compare(w[i].s)==0)
+            {
+                w[i].time++;
+                flag=1;
+                break;
+            }
+        }
+        if(flag) continue;
+        else		//增加单词
+        {
+            diclen++;
+            w[diclen].s=st;
+            w[diclen].time++;
+        }
+    }
+    for(int i=1;i<diclen;i++)
+    {
+        for(int j=1;j<diclen-i+1;j++)
+        {
+            if(w[j].time<w[j+1].time) swap(w[j],w[j+1]);
+        }
+    }
+    for(int i=1;i<=diclen;i++)
+    {
+        cout<<w[i].s<<" "<<w[i].time<<endl;
+    }
+	fin.close();
+	fout.close();
+    return 0;
+}
